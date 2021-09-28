@@ -1,0 +1,16 @@
+
+version: 2
+
+models:
+  - name: src_station_data
+    columns:
+      - name: ID
+        tests:
+          - not_null
+
+  - name: src_sensor_data
+    columns:
+      - name: source_id
+        tests:
+          - unique
+          - not_null

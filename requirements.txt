@@ -1,0 +1,7 @@
+numpy
+pandas
+dbt
+dvc
+mysql-connector
+airflow
+dbt-mysql
