@@ -1,6 +1,6 @@
 import pandas as pd
-import mysql.connector as mysql
-
+import psycopg2
+from psycopg2 import Error
 global station_sqlFile
 global sensor_sqlFile
 station_sqlFile = './sql_schema/station_table_schema.sql'
@@ -10,10 +10,10 @@ sensor_sqlFile = './sql_schema/sensor_table_schema.sql'
 def DBConnect(dbName=None):
 
     try:
-        conn = mysql.connect(host="localhost",
-                             user="root",
-                             passwd="password",
-                             port="3306",
+        conn = psycopg2.connect(host="localhost",
+                             user="dbtuser",
+                             passwd="pssd",
+                             port="5433",
                              database=dbName
                              )
 
