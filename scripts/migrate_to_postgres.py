@@ -3,6 +3,7 @@ import psycopg2
 from psycopg2 import Error
 import mysql.connector as mysql
 
+
 def PostgresConnect(dbName=None):
 
     try:
@@ -44,21 +45,48 @@ def MySQLConnect(dbName=None):
     return conn, cur
 
 
-try:
-    connection = psycopg2.connect(user="sysadmin",
-                                  password="pynative@#29",
-                                  host="127.0.0.1",
-                                  port="5432",
-                                  database="postgres_db")
-    cursor = connection.cursor()
+def migrate_data_from_table(MysqldbName: str, PostgresdbName: str,  tableName: str) -> None:
+    try:
+        conn, cur = MySQLConnect(MysqldbName)
 
-    postgres_insert_query = """ INSERT INTO mobile (ID, MODEL, PRICE) VALUES (%s,%s,%s)"""
-    record_to_insert = (5, 'One Plus 6', 950)
-    cursor.execute(postgres_insert_query, record_to_insert)
+        sql = f"SELECT * FROM {tableName}"
+        cur.execute(sql)
+        print("Record inserted")
+        # Fetch all the records
+        data_list = []
+        result = cur.fetchall()
+        for i in result:
+            data_list.append(i)
+            print(f":: Fetching data from MySQL Progress, {round((i*100)/result.rowcount,2)}")
 
-    connection.commit()
-    count = cursor.rowcount
-    print(count, "Record inserted successfully into mobile table")
+        conn.commit()
+        cur.close()
+        print("Records Fetched, Sucessfully")
+    except Exception as e:
+        print(":::", e)
 
-except (Exception, psycopg2.Error) as error:
-    print("Failed to insert record into mobile table", error)
+    print("----- Done")
+
+    try:
+        conn, cur = PostgresConnect(PostgresdbName)
+        for row in data_list:
+            print(f":: Migration Progress, {round((row*100)/len(data_list),2)}")
+            sql = f"INSERT INTO {PostgresdbName}.{tableName} VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+
+        conn.commit()
+        cur.close()
+    except Exception as e:
+        print(e)
+
+    return None
+
+
+if __name__ == "__main__":
+
+    if (True):
+        sensor_table_name = "all_sensor_data"
+        station_table_name = "I80_stations"
+        migrate_data_from_table(MysqldbName='sensor_data', PostgresdbName='sensor_data', tableName=station_table_name)
+        migrate_data_from_table(MysqldbName='sensor_data', PostgresdbName='sensor_data', tableName=sensor_table_name)
+        print("Sucessfully, created db and Tables")
+
