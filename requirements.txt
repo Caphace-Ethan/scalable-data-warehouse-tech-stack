@@ -5,3 +5,4 @@ dvc
 mysql-connector
 airflow
 dbt-mysql
+psycopg2
