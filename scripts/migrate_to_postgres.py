@@ -2,6 +2,11 @@ import pandas as pd
 import psycopg2
 from psycopg2 import Error
 import mysql.connector as mysql
+station_sqlFile = './sql_schema/station_table_schema.sql'
+sensor_sqlFile = './sql_schema/sensor_table_schema.sql'
+station_data_path = "./data/I80_stations.csv"
+sensor_data_path = "./data/all_sensor_data1.csv"
+
 
 def PostgresConnect(dbName=None):
 
@@ -44,21 +49,34 @@ def MySQLConnect(dbName=None):
     return conn, cur
 
 
-try:
-    connection = psycopg2.connect(user="sysadmin",
-                                  password="pynative@#29",
-                                  host="127.0.0.1",
-                                  port="5432",
-                                  database="postgres_db")
-    cursor = connection.cursor()
+def migrate_data_from_table(MysqldbName: str, PostgresdbName: str,  tableName: str) -> None:
+    try:
+        conn, cur = MySQLConnect(MysqldbName)
 
-    postgres_insert_query = """ INSERT INTO mobile (ID, MODEL, PRICE) VALUES (%s,%s,%s)"""
-    record_to_insert = (5, 'One Plus 6', 950)
-    cursor.execute(postgres_insert_query, record_to_insert)
+        sql = f"SELECT * FROM {tableName}"
+        cur.execute(sql)
+        print("Record inserted")
+        # Fetch all the records
+        data_list = []
+        result = cur.fetchall()
+        for i in result:
+            data_list.append(i)
+            print(":::", i)
 
-    connection.commit()
-    count = cursor.rowcount
-    print(count, "Record inserted successfully into mobile table")
+        conn.commit()
+        print("Records Fetched, Sucessfully")
+    except Exception as e:
+        print(":::", e)
 
-except (Exception, psycopg2.Error) as error:
-    print("Failed to insert record into mobile table", error)
+    conn.commit()
+    cur.close()
+    print("----- Done")
+
+    conn, cur = PostgresConnect(PostgresdbName)
+    for row in data_list:
+        sql = f"INSERT INTO {PostgresdbName}.{tableName} VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+
+    conn.commit()
+    cur.close()
+    return data_list
+
