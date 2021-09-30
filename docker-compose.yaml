@@ -164,6 +164,18 @@ services:
       - postgres
       - db
 
+  superset:
+    image: apache/superset
+    restart: always
+    ports:
+      - '8088:8088'
+    environment:
+      username: admin
+      firstname: Superset
+      lastname: admin
+      email: admin@superset.com
+      password: admin
+
 volumes:
   postgres-db-volume:
   my-db:
