@@ -8,6 +8,7 @@
 - [Technologies used](#technologies-used)
 - [Airflow](#airflow)
 - [DBT](#dbt)
+- [Superset](#superset)
 - [Scripts](#scripts)
 - [Install](#instalation)
 - [Documentation](#documentation)
