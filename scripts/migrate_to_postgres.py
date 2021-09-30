@@ -2,10 +2,6 @@ import pandas as pd
 import psycopg2
 from psycopg2 import Error
 import mysql.connector as mysql
-station_sqlFile = './sql_schema/station_table_schema.sql'
-sensor_sqlFile = './sql_schema/sensor_table_schema.sql'
-station_data_path = "./data/I80_stations.csv"
-sensor_data_path = "./data/all_sensor_data1.csv"
 
 
 def PostgresConnect(dbName=None):
@@ -61,22 +57,36 @@ def migrate_data_from_table(MysqldbName: str, PostgresdbName: str,  tableName: s
         result = cur.fetchall()
         for i in result:
             data_list.append(i)
-            print(":::", i)
+            print(f":: Fetching data from MySQL Progress, {round((i*100)/result.rowcount,2)}")
 
         conn.commit()
+        cur.close()
         print("Records Fetched, Sucessfully")
     except Exception as e:
         print(":::", e)
 
-    conn.commit()
-    cur.close()
     print("----- Done")
 
-    conn, cur = PostgresConnect(PostgresdbName)
-    for row in data_list:
-        sql = f"INSERT INTO {PostgresdbName}.{tableName} VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+    try:
+        conn, cur = PostgresConnect(PostgresdbName)
+        for row in data_list:
+            print(f":: Migration Progress, {round((row*100)/len(data_list),2)}")
+            sql = f"INSERT INTO {PostgresdbName}.{tableName} VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
-    conn.commit()
-    cur.close()
-    return data_list
+        conn.commit()
+        cur.close()
+    except Exception as e:
+        print(e)
+
+    return None
+
+
+if __name__ == "__main__":
+
+    if (True):
+        sensor_table_name = "all_sensor_data"
+        station_table_name = "I80_stations"
+        migrate_data_from_table(MysqldbName='sensor_data', PostgresdbName='sensor_data', tableName=station_table_name)
+        migrate_data_from_table(MysqldbName='sensor_data', PostgresdbName='sensor_data', tableName=sensor_table_name)
+        print("Sucessfully, created db and Tables")
 
