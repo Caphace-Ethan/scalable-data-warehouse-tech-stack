@@ -1,0 +1,2 @@
+
+python3 -c'import create_db_tables; create_db_tables.createDB(dbName="sensor_data"); create_db_tables.createTables(dbName="sensor_data", tableName=station_sqlFile);create_db_tables.createTables(dbName="sensor_data", tableName=sensor_sqlFile)'
