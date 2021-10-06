@@ -53,8 +53,8 @@ If you wish to run/use this project, download these data from the url specified 
 - **Install Required Python packages**
 
 ```
-git clone https://github.com/Caphace-Ethan/data-warehouse-tech-stack
-cd data-warehouse-tech-stack
+git clone https://github.com/Caphace-Ethan/scalable-data-warehouse-tech-stack
+cd scalable-data-warehouse-tech-stack
 pip install -r requirements.txt
 ```
 
